@@ -2,17 +2,10 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width initial-scale=1">
-  <link rel="icon" href="/images/circle.PNG">
+  <link rel="icon" href="">
   <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
   <meta name="description" content="{% if page.preview %}{{ page.preview | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
   {% if page.image %}
-  <!--Twitter meta tags, so the tweet contains a nice preview of the article-->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@amihaiemil">
-  <meta name="twitter:creator" content="@{{page.author}}">
-  <meta name="twitter:title" content="{{page.title}}">
-  <meta name="twitter:description" content="{{page.preview}}">
-  <meta name="twitter:image" content="{{page.image}}">
   <!-- OpenGraph tags, so other platforms like Facebook, also display the shared post nicely-->
   <meta property="og:url" content="{{page.url}}" />
   <meta property="og:type" content="article" />
@@ -20,12 +13,11 @@
   <meta property="og:description" content="{{page.preview}}" />
   <meta property="og:image" content="{{page.image}}" />
   {% endif %}
-  <meta property="fb:app_id" content="142729202995465"/>
+  <meta property="fb:app_id" content="570982010044194"/>
 
   <link rel="stylesheet" href="{{ "/css/main.css" | prepend: site.baseurl }}">
   <link rel="stylesheet" href="{{ "/css/font-awesome.min.css" | prepend: site.baseurl }}">
   <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
-  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
   <script data-bg="#0C1961" data-fg="#99D9FF" type="text/javascript" id="cookiebanner"
     src="/js/cookiebanner.min.js"></script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -35,7 +27,7 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-63326627-2', 'auto');
+      ga('create', 'UA-44069047-1', 'auto');
       ga('send', 'pageview');
   </script>
 </head>

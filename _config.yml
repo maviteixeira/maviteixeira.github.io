@@ -6,19 +6,18 @@ paginate: 10
 paginate_path: "/page:num/"
 
 # Site settings
-title: amihaiemil.com | Programming blog
-email: amihaiemil@gmail.com
+title: maviteixeira.com | Programming and stuff
+email: marcoo.teixeira@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  This is a blog about programming. Posts will cover various topics,
-  and open source projects.
-url: https://www.amihaiemil.com # the base hostname & protocol for your site
-twitter_username: amihaiemil
-github_username:  amihaiemil
+  This is a blog about programming and life. Posts will cover various topics.
+url: https://maviteixeira.com # the base hostname & protocol for your site
+twitter_username: maviteixeira
+github_username:  maviteixeira
 
 include: ['.well-known']
 
 # Build settings
-timezone: Romania/Bucharest
+timezone: Campinas/Sao_Paulo
 markdown: kramdown
 
 lsi: false
