@@ -16,7 +16,7 @@ In this things I mean bugs per iteraction, quality related numbers (this may var
 
 This seems a very important role if you ask me, but why most of the developers don't like architects very much ?
 
-The old style architect usually follow this line: A experienced developer that know a lot about the company projects and code is promoted to get a higher salary and preventing his to leave, after that he start to make all decisions in his office very far from the team and without proper discussion about tecnology.
+The old style architect usually follow this line: A experienced developer that know a lot about the company projects and code make all decisions in his office very far from the team and without proper discussion about tecnology.
 
 This distant approach and the rise of agile methodologies created a myth that the architect is something unecessary in self managed agile teams.
 
