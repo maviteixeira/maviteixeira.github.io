@@ -7,36 +7,33 @@ comments: true
 author: maviteixeira
 preview: First post to check out the blog!
 ---
+1h
 
 Just to get everyone up to speed I would like to quote what a software architect is supposed to do:
 "A software architect is a software developer expert who makes high-level design choices and dictates technical standards, including software coding standards, tools, and platforms."
-Second Wikipedia an architect will make tough design choices and dictates a lot of things but one thing that I want to add in this definition is: "The architect should take full responsiblity for the decisions and report how things are running to the manager".
+Second Wikipedia an architect will make tough decisions and dictates a lot of things that will directly impact the developers but one thing that I want to add in this definition is: "The architect should take full responsiblity for the decisions made and report how things are running to the manager".
 
-In this things I mean bugs per iteraction, quality related numbers (this may vary).
+In this things I mean bugs per iteraction, quality related numbers (this may vary) and other data that the manager could eventually ask about the projects.
 
-This seems a very important role if you ask me, but why most of the developers don't like architects very much ?
+So by definition the architect role seems very important one if you ask me but despite of that most developers don't like it very much, to undertand this behavior we should look how the architect conducted his jobs some years ago. The old style architect usually follow one simple line: A experienced developer that know a lot about the company projects, get promoted and start to make all decisions about code in his office far from the team and without proper discussions.
 
-The old style architect usually follow this line: A experienced developer that know a lot about the company projects and code make all decisions in his office very far from the team and without proper discussion about tecnology.
+The rise of agile methodologies and this distance between the architect and the team created a myth that the architect is something unecessary and self managed teams could fill that gap easily, we will enter in this discussion in a second.
 
-This distant approach and the rise of agile methodologies created a myth that the architect is something unecessary in self managed agile teams.
+First of all I agree that an architect that don't work with the teams, hear the opinions could not make the best call for the project and the company. Furthermore the architect should be actively coding because software related tecnology move fast and we need someonce to stay up to date to make critical decisions.
 
-
-
-First of all I agree that an architect that don't code anymore and stays on silos very far from the teams is not a great choice, that alone should not invalidate the role itself but open room for improvement.
-
-One thing that I know for sure is someone will assume the architect role in the team, this could be the most capable person or the bulliest one that will pressure the entire team to bow his decisions. So is better to give the responsability to the former.
+If you don't have this role in your company someone eventually will assume the role, this could be the most capable person or the bulliest one. So is better to think carefully and may be a better alternative give a splicity role to the former.
 
 
 
 
 
 - How an architect is important
-        Who needs a software architect paper
-        Software architect is a fancy name for a expensive developer
-        Architecture is hard to change (caracteristic)
+        --Who needs a software architect paper
+        --Software architect is a fancy name for a expensive developer
+        --Architecture is hard to change (caracteristic)
         All architecture is design but not all design is architecture
         Think about BDUF
-        Historical definition (Durability, Utility, Beauty)
+        ---Historical definition (Durability, Utility, Beauty)
         How the system is partition and the interaction
         As the system grows the design and system specifications become more significant issues thant the choice of algoritm
         Descriptions of elements and interaction between then
