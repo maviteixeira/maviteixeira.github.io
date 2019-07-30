@@ -22,7 +22,7 @@ The question is how can we achieve that if no one is taking responsibility for t
 
 **"A software architect is a software developer expert who makes high-level design choices and dictates technical standards, including software coding standards, tools, and platforms. (Wikipedia)"**
 
-However, this is not what the most companies think. Today most of the teams are self managed receiving some level of autonomy and responsability, this sounds greate but created a myth that the architect is something unecessary and all decisions sould be solved democratically even between different teams, they just have to talk to each other and vote.
+However, this is not what the most companies think. Today most of the teams are self managed receiving some level of autonomy and responsability, this sounds greate but created a myth that the architect is something unecessary and all decisions should be solved democratically even between different teams, they just have to talk to each other and vote.
 
 Needless to say that every team have their own desires and preferences, going further I could say that each developer have his own agenda related to code standards and quality. This means, basically, the biggest the company the most problems you will have in the long run, because there is no one responsible to watch over the projects.
 
@@ -34,4 +34,4 @@ You may argue that your team or company don't have an architect and everything i
 
 Another downside and one of the biggest problems with this approach is the employer do not choose who will get the stick and in the most cases the best speaker or the most aggressive developer will assume the role without taking experience and technicall skills in consideration.
 
-To summarise, don't fall in the team democracy trap, you really need a experienced architect to enforce quality gateways especially if you are not a small company. You must have someone to watch over the project and ensure the quality of your product so in the long run you don't need to expend thousands of dolars to writing all the software again.
+To summarise, don't fall in the team democracy trap, you really need an experienced architect to enforce quality gateways especially if you are not a small company. You must have someone to watch over the project and ensure the quality of your product so in the long run you don't need to expend thousands of dolars to writing all the software again.
