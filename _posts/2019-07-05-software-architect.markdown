@@ -36,5 +36,5 @@ One sure thing is it always be an architect in the team, being you happy or not.
 
 ## Conclusion
 
-Just to wrap eveything up we really need explicity architects to take care of project integrations, make sure the standards are being followed, the quality is respected and everything is on track with the company objectives. We need architects to take the entire responsibility for this problems and report the progress and issues, help the team to code better and code to help the team.
+Just to wrap eveything up. You can get away without it if your company is very small and have just a couple of people otherwise we really need explicity architects to take care of project integrations, make sure the standards are being followed, the quality is respected and everything is on track with the company objectives. We need architects to take the entire responsibility for this problems and report the progress and issues, help the team to code better and code to help the team.
 It's not the market standards right now and unfortunatelly I'm seeing a lot of problemas because of that and thousand of dollars going to waste.
