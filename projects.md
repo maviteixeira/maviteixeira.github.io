@@ -5,4 +5,4 @@ header: Projects
 permalink: /projects.html
 ---
 
-Working on it.
+I still don't have anything interesting in the open source community :(
