@@ -6,7 +6,7 @@ tags: architect
 comments: true
 author: maviteixeira
 preview: When working in software projects is hard to get some standards between different applications and teams, whether it is the same language or not, it obvious that in a serious organization you need to have some base standards, code quality bar and measurements
-image: https://maviteixeira.github.io/images/we_just_need_to_find_her.PNG
+image: https://maviteixeira.github.io/images/we_just_need_to_find_her.png
 ---
 
 In a serious organization you need to have some base standards, code quality bar and measurements. This applies, of course, to the projects internal communication. When working in software projects, is it hard to get some standards between different applications and teams, whether they use the same programming language or not, it obvious that, especially if it breaks the boundaries of different teams.
