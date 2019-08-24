@@ -1,0 +1,64 @@
+---
+layout: post
+title:  "The Software architect absence."
+date:   2019-08-23 21:00:00
+tags: architect
+comments: true
+author: maviteixeira
+preview: In a serious organization you need to have some base standards, code quality bar and measurements. This applies, of course, to the projects internal communication
+image: https://maviteixeira.github.io/images/we_just_need_to_find_her.png
+--- 
+
+Think about the abstraction of the CustomerId and how that solve an imminent complexity problem
+CUSTOMERID:123132
+21321231
+123-132-132-123
+
+Creating classes instead of adding ifs to a service or a converter that could lead a bigger class with bigger complexity and testing.
+
+
+
+When working with integrations in different applications that are not controller by our team we could get into some problems communication problems, specially if we dont have an architect taking care and making eveything clear. One of the most common issues is the same identification or data being sent completely different ways, so our application will need to handle this not standardized formats.
+
+Lets say we need to integrate with 3 different applications all of them need to send events to us that idintify the client and have some meaning to the business, for example the user finished a transaction.
+
+So far so good we nee to create 3 threads that will listen to special events, find the user in the database and process the information, to facilitate I will name this events: TransactionFinished, EmailSent and NotificationSent.
+
+So is a very simple flux the cliente finished a transaction and receive an email and a notification, our application in this example just track everything and nothing else.
+
+According to the team we talked the client identity format should be a couple of numbers.
+
+The fist event "TransactionFinished" we receive have this identity:
+``12345612341234123456``
+So far so good we got the client from the and process the information.
+
+The second event "EmailSent" we receive have this identity:
+CLIENT:12345612341234123456
+This should refer to the same client but the format is totally messed up and will break our application, so we need to make parse.
+
+The third event "NotificationSent" we receive have this identity:
+123456-1234-1234-123456
+Another weird format that we need to parse to prevent our application to break.
+
+
+Usually when something like this happen we add a "Parser", "Converter" or maybe put all this logic in the service like the code below:
+
+{% highlight java %}
+    public class ClientService {
+        private final ClientConverter clientConverter;
+        Person fetch (int id);
+        public Client findClient(ClientDto clientDto) {
+            String clientIdentity = clientConverter.convertClientIdentity(clientDto.getIdentity());
+            //Search in the database and return the Client
+    }
+{% endhighlight %}
+
+This is procedural and not OOP oriented, is getting hard to test for every new format, getting complex and you don't know the real meaning of this.
+
+
+One thing that I encourage to do is always creating abstractions to work with the code, to make the code meaningfull. The converter class doesnt have any meaning to the business and don't represent any interface.
+To fix this problem we should create an interface that mean something like "ClientIdentity" in this case, so everywhere in the system that we need to pass a client identification we pass a implementation of this class and not a simple String.
+
+
+
+Adding this interface we could tear the converter apart and for every place that we have an integration we can instanciate the right class for the job like the example below.

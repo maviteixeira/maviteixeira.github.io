@@ -57,3 +57,5 @@ https://www.joecolantonio.com/testing-pyramid/
 
 
 Zero, One, Many, Lots and Ops
+
+https://www.youtube.com/watch?v=CHDZpFU33KQ
