@@ -1,47 +1,28 @@
 ---
 layout: post
-title:  "The Software architect absence."
+title:  "Keep all details hidden"
 date:   2019-08-23 21:00:00
-tags: architect
+tags: architect, oop
 comments: true
 author: maviteixeira
-preview: In a serious organization you need to have some base standards, code quality bar and measurements. This applies, of course, to the projects internal communication
+preview: When working with integrations between different applications that are controlled by external teams we could get into some communication problems, specially if the company lack of the architect figure and let the teams do whatever they please without documenting and creating communications standards. 
 image: https://maviteixeira.github.io/images/we_just_need_to_find_her.png
 --- 
 
-Think about the abstraction of the CustomerId and how that solve an imminent complexity problem
-CUSTOMERID:123132
-21321231
-123-132-132-123
+When working with integrations between different applications that usually are controlled by external teams eventually we can get into some communication problems, specially if the company lack of the [architect](https://maviteixeira.com/2019/08/02/software-architect.html) figure and let the teams do whatever they please without documenting and creating communications standards.
 
-Creating classes instead of adding ifs to a service or a converter that could lead a bigger class with bigger complexity and testing.
+One of the most common issues is external applications sending the same data in different formats, forcing us to adapt our code to process all the non standard messages in completely different ways.
 
+To ilustrate the problem let's say we need to integrate with 3 different applications, all of them are sending a String that identify the client, we need to find that client and process in different ways depending of the sender. 
+The problem is that the client identification is not standard between applications and have the formats below:
 
+FizzApplication - ``12345612341234123456``
 
-When working with integrations in different applications that are not controller by our team we could get into some problems communication problems, specially if we dont have an architect taking care and making eveything clear. One of the most common issues is the same identification or data being sent completely different ways, so our application will need to handle this not standardized formats.
+BuzzApplication - ``CLIENT:12345612341234123456``
 
-Lets say we need to integrate with 3 different applications all of them need to send events to us that idintify the client and have some meaning to the business, for example the user finished a transaction.
+DogApplication  - ``123456-1234-1234123-456``
 
-So far so good we nee to create 3 threads that will listen to special events, find the user in the database and process the information, to facilitate I will name this events: TransactionFinished, EmailSent and NotificationSent.
-
-So is a very simple flux the cliente finished a transaction and receive an email and a notification, our application in this example just track everything and nothing else.
-
-According to the team we talked the client identity format should be a couple of numbers.
-
-The fist event "TransactionFinished" we receive have this identity:
-``12345612341234123456``
-So far so good we got the client from the and process the information.
-
-The second event "EmailSent" we receive have this identity:
-CLIENT:12345612341234123456
-This should refer to the same client but the format is totally messed up and will break our application, so we need to make parse.
-
-The third event "NotificationSent" we receive have this identity:
-123456-1234-1234-123456
-Another weird format that we need to parse to prevent our application to break.
-
-
-Usually when something like this happen we add a "Parser", "Converter" or maybe put all this logic in the service like the code below:
+Usually when something like this happen we add a ``Parser``, ``Converter`` or maybe put all this logic in the service that is consuming this message like in the code below:
 
 {% highlight java %}
     public class ClientService {
@@ -53,12 +34,109 @@ Usually when something like this happen we add a "Parser", "Converter" or maybe 
     }
 {% endhighlight %}
 
-This is procedural and not OOP oriented, is getting hard to test for every new format, getting complex and you don't know the real meaning of this.
+The ``ClientService`` is receiving a ``DTO``, it's converting to the client identification as a common ``String`` and then is sending to the repository that will return a implementation of the ``Client`` interface.
 
+Now let's take a look in the converter itself:
 
-One thing that I encourage to do is always creating abstractions to work with the code, to make the code meaningfull. The converter class doesnt have any meaning to the business and don't represent any interface.
-To fix this problem we should create an interface that mean something like "ClientIdentity" in this case, so everywhere in the system that we need to pass a client identification we pass a implementation of this class and not a simple String.
+{% highlight java %}
+    public class ClientConverter {
+        private static final String SEPARATOR = "-";
+        private static final String CLIENT = "CLIENT:";
 
+        public String convertClientIdentity(String clientIdentity) {
+            if (clientIdentity.contains(CLIENT)) {
+                return clientIdentity.replace(CLIENT, "");
+            }
+            if (clientIdentity.contains(SEPARATOR)) {
+                return clientIdentity.replace("-", "");
+            }
+            return clientIdentity;
+        }
+    }
+{% endhighlight %}
 
+In our case is pretty simple because our formats are easy to reason about it. But don't be fooled this class could get messy really quickly if somewhere in the future we need to add some validations or if in a specific format we need to do a HTTP request to decrypt the identification before return it. Anyway here some topics that ilustrate the major problems that I see with this approach:
+ - The class ``ClientConverter`` doesn't mean anything to the business and we lose semantic value that would facilitate our undertanding.
+ - This class will grow and become more complex and hard to test for every new non standard client identifier.
+ - This class have no abstraction implementation details (needs a interface)
+ - This class have too many responsabilities because need to check and convert 3 types of formats at once.
 
-Adding this interface we could tear the converter apart and for every place that we have an integration we can instanciate the right class for the job like the example below.
+One thing that I encourage to always do is think about the meaning of things and design the interfaces accordingly, to make everything clear let's start with an example, first we need to find the meaning that in our case is obviously a client identifier that being said it's clear we should create the first abstraction:
+
+{% highlight java %}
+    public interface ClientIdentity {
+
+        String value();
+
+    }
+{% endhighlight %}
+
+This interface identify the contract that represent a client identification for the application, so we can go on changing the services to honor this contract:
+
+{% highlight java %}
+    public interface Clients extends Iterable<Client> {
+
+        Client client(ClientIdentity identity);
+
+    }
+{% endhighlight %}
+
+This interface will accept any implementation of the ``ClientIdentity`` and return a ``Client`` abstraction that will execute some process later. Because of this interface we can create implementations that will handle specific formats, for example let's assume that the first format should be the standard ``12345612341234123456``, so we could come up with a simple class that just return the ``String``:
+
+{% highlight java %}
+    public class FizzClientClientIdentity implements ClientIdentity {
+        private final String identity;
+
+        public FizzClientIdentity(String identity) {
+            this.identity = identity;
+        }
+
+        public String value() {
+            return identity;
+        }
+    }
+{% endhighlight %}
+
+This class handle the default format doing nothing as expected.
+
+Now for the second format we need to remove some caracters before returning ``CLIENT:12345612341234123456``, here is the implementation for it:
+
+{% highlight java %}
+    public class BuzzClientIdentity implements ClientIdentity {
+        private static final String CLIENT = "CLIENT:";
+        private final String identity;
+
+        public BuzzIdentity(String identity) {
+            this.identity = identity;
+        }
+
+        public String value() {
+            return identity.replace(CLIENT, "");
+        }
+    }
+{% endhighlight %}
+
+Same goes for the third and last format ``123456-1234-1234123-456``:
+
+{% highlight java %}
+    public class DogClientIdentity implements ClientIdentity {
+
+        private static final String SEPARATOR = "-";
+        private final String identity;
+
+        public DogClientIdentity(String identity) {
+            this.identity = identity;
+        }
+
+        public String value() {
+            return identity.replace(SEPARATOR, "");
+        }
+
+    }
+{% endhighlight %}
+
+Now we have 3 classes that represent different formats but using the same contract ``ClientIdentity``, the ``Clients`` doesn't know what implementation are being pass and doesn't care either it will just follow the contract and ask for the value to search the client.
+This add a flexibility to any number of formats to be handled and it will keep the classes short and cohesive, they are easy to test and reason about it and have meaning to the business.
+
+To summarise, we need to pay more attention to the business and how we translate that into the code, thinking about our abstractions more carefully and use all the power that OOP is offering to avoid procedural code and classes that will grow indefinitely like our converter above.
+After years doing the converter path I can't say it's easy to think this way, but surely is getting easier with time and if we want to deliver better software we need to keep learning and pay attention to details.
