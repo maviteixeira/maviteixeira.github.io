@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "The Software architect absence."
+title:  "The Software architect absence"
 date:   2019-08-02 21:00:00
 tags: architect
 comments: true
