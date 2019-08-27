@@ -1,20 +1,21 @@
 ---
 layout: post
 title:  "Keep all details hidden"
-date:   2019-08-23 21:00:00
+date:   2019-08-30 21:00:00
 tags: architect, oop
 comments: true
+shareable: true
 author: maviteixeira
-preview: When working with integrations between different applications that are controlled by external teams we could get into some communication problems, specially if the company lack of the architect figure and let the teams do whatever they please without documenting and creating communications standards. 
+preview: When integrating with different backend applications there is a good chance that we can get in some communication problems, especially if the company lack of the architect figure and let the teams do whatever they please, without proper documentation and standards working with other teams could become a tricky task.
 image: https://maviteixeira.github.io/images/we_just_need_to_find_her.png
 --- 
 
-When working with integrations between different applications that usually are controlled by external teams eventually we can get into some communication problems, specially if the company lack of the [architect](https://maviteixeira.com/2019/08/02/software-architect.html) figure and let the teams do whatever they please without documenting and creating communications standards.
+When integrating with different backend applications there is a good chance that we can get in some communication problems, especially if the company lack of the [architect](https://maviteixeira.com/2019/08/02/software-architect.html) figure and let the teams do whatever they please, without proper documentation and standards working with other teams could become a tricky task.
 
-One of the most common issues is external applications sending the same data in different formats, forcing us to adapt our code to process all the non standard messages in completely different ways.
+One of the most common issues between projects communication is sending data in non-standard formats, forcing us to adapt our code to process it.
 
-To ilustrate the problem let's say we need to integrate with 3 different applications, all of them are sending a String that identify the client, we need to find that client and process in different ways depending of the sender. 
-The problem is that the client identification is not standard between applications and have the formats below:
+To illustrate the problem let's say we need to receive messages from 3 different applications, all of them are sending a String that serves as a client identity, and our job is to find that specific client and process something depending on the sender. 
+The problem is the client identity is being passed differently by the applications, to make everything clear you can check formats below:
 
 FizzApplication - ``12345612341234123456``
 
@@ -22,7 +23,7 @@ BuzzApplication - ``CLIENT:12345612341234123456``
 
 DogApplication  - ``123456-1234-1234123-456``
 
-Usually when something like this happen we add a ``Parser``, ``Converter`` or maybe put all this logic in the service that is consuming this message like in the code below:
+Usually, when we need to transform the entries for some specific format we create a ``Parser``, ``Converter`` or maybe put all this logic in a service like in the code below:
 
 {% highlight java %}
     public class ClientService {
@@ -34,9 +35,9 @@ Usually when something like this happen we add a ``Parser``, ``Converter`` or ma
     }
 {% endhighlight %}
 
-The ``ClientService`` is receiving a ``DTO``, it's converting to the client identification as a common ``String`` and then is sending to the repository that will return a implementation of the ``Client`` interface.
+The ``ClientService`` is receiving a ``DTO`` with the client identity in it, then the service is converting the identity to ``String`` and after that is sending to the repository that will search for it and return an implementation of the ``Client`` interface.
 
-Now let's take a look in the converter itself:
+Now let's take a look in the converter:
 
 {% highlight java %}
     public class ClientConverter {
@@ -55,33 +56,33 @@ Now let's take a look in the converter itself:
     }
 {% endhighlight %}
 
-In our case is pretty simple because our formats are easy to reason about it. But don't be fooled this class could get messy really quickly if somewhere in the future we need to add some validations or if in a specific format we need to do a HTTP request to decrypt the identification before return it. Anyway here some topics that ilustrate the major problems that I see with this approach:
- - The class ``ClientConverter`` doesn't mean anything to the business and we lose semantic value that would facilitate our undertanding.
- - This class will grow and become more complex and hard to test for every new non standard client identifier.
- - This class have no abstraction implementation details (needs a interface)
- - This class have too many responsabilities because need to check and convert 3 types of formats at once.
+In our case is pretty simple because our formats are easy to reason about it. But don't be fooled this class could get messy quickly especially if in the future we add some validations or to get the identity we have to do a HTTP request to some kind of decrypting. 
 
-One thing that I encourage to always do is think about the meaning of things and design the interfaces accordingly, to make everything clear let's start with an example, first we need to find the meaning that in our case is obviously a client identifier that being said it's clear we should create the first abstraction:
+Anyway, here are some topics that illustrate the major problems that I see with this approach:
+ - The class ``ClientConverter`` doesn't mean anything to the business and we lose the semantic value that would facilitate our understanding.
+ - This class will eventually grow, becoming complex and hard to test for every new non-standard client format.
+ - This class have no abstraction (needs an interface)
+ - This class has too many responsibilities because it needs to check and convert 3 types of formats at once.
+
+One thing that I encourage to always do is think about the meaning of things, relate with your business problems and translate to the code designing the interfaces accordingly. If you already read about DDD you know what I'm talking about.
+
+To make everything clear let's start with an example, first we need to find the meaning, in our case is obviously a client identity, that being said it's clear how we should create the first abstraction:
 
 {% highlight java %}
     public interface ClientIdentity {
-
         String value();
-
     }
 {% endhighlight %}
 
-This interface identify the contract that represent a client identification for the application, so we can go on changing the services to honor this contract:
+This interface identifies the contract that represents a client identifier for the application, so we can change the services to honor this contract:
 
 {% highlight java %}
-    public interface Clients extends Iterable<Client> {
-
+    public interface Clients {
         Client client(ClientIdentity identity);
-
     }
 {% endhighlight %}
 
-This interface will accept any implementation of the ``ClientIdentity`` and return a ``Client`` abstraction that will execute some process later. Because of this interface we can create implementations that will handle specific formats, for example let's assume that the first format should be the standard ``12345612341234123456``, so we could come up with a simple class that just return the ``String``:
+This interface will accept any implementation of the ``ClientIdentity`` and return a ``Client``. Because of this interface, we can create implementations that will handle specific formats and that's exactly what we need, for example, let's assume that the first format should be the standard ``12345612341234123456``, so we could come up with a simple class that just return a ``String``:
 
 {% highlight java %}
     public class FizzClientClientIdentity implements ClientIdentity {
@@ -97,9 +98,9 @@ This interface will accept any implementation of the ``ClientIdentity`` and retu
     }
 {% endhighlight %}
 
-This class handle the default format doing nothing as expected.
+This class handles the default format doing nothing and returning it.
 
-Now for the second format we need to remove some caracters before returning ``CLIENT:12345612341234123456``, here is the implementation for it:
+Now for the second pattern, we need to remove some characters before returning ``CLIENT:12345612341234123456``, here is the implementation for it:
 
 {% highlight java %}
     public class BuzzClientIdentity implements ClientIdentity {
@@ -116,11 +117,10 @@ Now for the second format we need to remove some caracters before returning ``CL
     }
 {% endhighlight %}
 
-Same goes for the third and last format ``123456-1234-1234123-456``:
+The same goes for the third and last pattern ``123456-1234-1234123-456``:
 
 {% highlight java %}
     public class DogClientIdentity implements ClientIdentity {
-
         private static final String SEPARATOR = "-";
         private final String identity;
 
@@ -135,8 +135,9 @@ Same goes for the third and last format ``123456-1234-1234123-456``:
     }
 {% endhighlight %}
 
-Now we have 3 classes that represent different formats but using the same contract ``ClientIdentity``, the ``Clients`` doesn't know what implementation are being pass and doesn't care either it will just follow the contract and ask for the value to search the client.
-This add a flexibility to any number of formats to be handled and it will keep the classes short and cohesive, they are easy to test and reason about it and have meaning to the business.
+Now we have 3 classes that represent different pattern using the same contract ``ClientIdentity``, the ``Clients`` doesn't know what implementation is being passed and doesn't care either it will just follow the contract and ask for the value to search the client.
 
-To summarise, we need to pay more attention to the business and how we translate that into the code, thinking about our abstractions more carefully and use all the power that OOP is offering to avoid procedural code and classes that will grow indefinitely like our converter above.
+This adds flexibility and we can handle any number of patterns we want to but keeping the classes short and cohesive, they also are easy to test and reason about it because they mean something to the business.
+
+To summarise, we need to pay more attention to the business and how we translate that into the code, thinking about our abstractions more carefully and use all the power that OOP is offering to avoid procedural coding and classes that will grow indefinitely like our converter above.
 After years doing the converter path I can't say it's easy to think this way, but surely is getting easier with time and if we want to deliver better software we need to keep learning and pay attention to details.
