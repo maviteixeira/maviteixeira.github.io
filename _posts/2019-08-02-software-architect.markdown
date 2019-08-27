@@ -7,7 +7,7 @@ comments: true
 shareable: true
 author: maviteixeira
 preview: In a serious organization you need to have some base standards, code quality bar and measurements. This applies, of course, to the projects internal communication
-image: https://maviteixeira.github.io/images/we_just_need_to_find_her.png
+image: https://maviteixeira.com/images/we_just_need_to_find_her.png
 ---
 
 In a serious organization you need to have some base standards, code quality bar and measurements. This applies, of course, to the projects internal communication. When working in software projects, it is hard to get some standards between different applications and teams, whether they use the same programming language or not, it obvious that, especially if it breaks the boundaries of different teams.
@@ -15,10 +15,10 @@ In a serious organization you need to have some base standards, code quality bar
 The question is: How can we create those standards if no one is taking responsibility for this issues ? Each project have different problems, requirements and we need someone to address and take care of the big picture. This is the architect's job.
 
 <figure class="articleimg">
- <img src="{{page.image}}" alt="Two Little Indians">
- <figcaption>
- Tom & Jerry - Two Little Indians, by  William Hanna and Joseph Barbera
- </figcaption>
+    <img src="{{page.image}}" alt="We just need to find her">
+    <figcaption>
+    Regular Show - We just need to find her, by J.G. Quintel
+    </figcaption>
 </figure>
 
 **"A software architect is a software developer expert who makes high-level design choices and dictates technical standards, including software coding standards, tools, and platforms. (Wikipedia)"**
