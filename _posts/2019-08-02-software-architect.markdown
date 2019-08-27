@@ -14,6 +14,13 @@ In a serious organization you need to have some base standards, code quality bar
 
 The question is: How can we create those standards if no one is taking responsibility for this issues ? Each project have different problems, requirements and we need someone to address and take care of the big picture. This is the architect's job.
 
+<figure class="articleimg">
+ <img src="{{page.image}}" alt="Two Little Indians">
+ <figcaption>
+ Tom & Jerry - Two Little Indians, by  William Hanna and Joseph Barbera
+ </figcaption>
+</figure>
+
 **"A software architect is a software developer expert who makes high-level design choices and dictates technical standards, including software coding standards, tools, and platforms. (Wikipedia)"**
 
 However, this is not what most companies think. Today most teams are self managed, receiving a great level of autonomy and responsibility. This sounds great in paper, but ended up creating this myth where a designated architect is completely unnecessary and that all decisions should be made democratically even between different teams, they just have to talk to each other and vote.
