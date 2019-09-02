@@ -18,7 +18,7 @@ One of the most common issues in project communication is sending data in non-st
 <figure class="articleimg">
     <img src="{{page.image}}" alt="Prank callers">
     <figcaption>
-    Regular Show - We just need to find her, by J.G. Quintel
+    Regular Show - Prank callers, by J.G. Quintel
     </figcaption>
 </figure>
 
