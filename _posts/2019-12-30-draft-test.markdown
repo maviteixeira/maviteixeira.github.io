@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "The Software architect absence."
-date:   2019-08-30 21:00:00
+date:   2019-12-30 21:00:00
 tags: architect
 comments: true
 author: maviteixeira
