@@ -72,7 +72,7 @@ Anyway, here are some topics that illustrate the major problems that I see using
  - This class has no abstraction (needs an interface).
  - This class has too many responsibilities, as it needs to check and convert 3 types of formats at once.
 
-One thing I always encourage to do is thinking about the meaning of your abstractions and relating them to your business, this will help you design meaningful interfaces. If you have already read about DDD, you know what I'm talking about.
+One thing I always encourage to do is thinking about the meaning of your abstractions and relating them to your business, this will help you design meaningful interfaces. If you have already read about DDD, you would know what I'm talking about.
 
 To make everything clear, let's start with an example. First, we need to find the meaning; in our case, it’s obviously a client ID. That being said, it's clear how we should create the first abstraction:
 
