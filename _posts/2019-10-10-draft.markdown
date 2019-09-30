@@ -1,0 +1,143 @@
+---
+layout: post
+title:  "New approach on roles and permissions"
+date:   2019-09-03 21:00:00
+tags: oop
+comments: true
+shareable: true
+author: maviteixeira
+preview: Working in my pet projects I came across a common feature in the software industry, roles and permissions. I never though about how to apply this validations in an elegant way so I gave a try.
+
+
+image: https://maviteixeira.com/images/prank_callers.png
+--- 
+
+Working in my pet projects I came across a common feature in the software industry, roles and permissions. I never though about how to apply this validations in an elegant way so I gave a try. Here is the scenario, let's say we are creating a virtual room and we have 2 major roles: administrators, common.
+
+Administrators can rename and close the room, however they can't join because they are already there. Common users just have permission to join the room and nothing more.
+
+<figure class="articleimg">
+    <img src="{{page.image}}" alt="Prank callers">
+    <figcaption>
+    Regular Show - Prank callers, by J.G. Quintel
+    </figcaption>
+</figure>
+
+{% highlight java %}
+interface Room {
+
+   fun rename(name: String)
+   
+   fun close()
+
+   fun join()
+
+}
+{% endhighlight %}
+
+The interface above translate the behavior, given a specific room you can try to rename, join or close it and depending of your authorization level you could succeed or not. I implement in the simplest way possible, always respecting the encapsulation and abstraction.
+
+{% highlight java %}
+class PersistedRoom(
+    private val connection: Connection,
+    private val user: User,
+    private val id: String
+) : Room {
+
+    override fun rename(name: String) {
+        if(user.isAdmin()){
+            //Rename the room
+        }
+        throw RuntimeException("You are not the owner")
+    }
+
+    override fun join() {
+        //Join the room
+    }
+
+    override fun close() {
+        if(user.isAdmin()){
+            //Close the room
+        }
+        throw RuntimeException("You are not the owner")
+    }
+
+}
+{% endhighlight %}
+
+The code above receive a authenticated user via DI along with the connection and the room identifier, on each method it checks the authorization before performing a task and throws an exception if the role is not compatible with the feature. However the role check code is repeated across multiple methods and this is not a good sign, possibly in the future we will need to add a new role and this could impact the entire code.
+
+Here is what I did to fix this issues: I change the PersistedRoom implementation to handle just the common scenario wihout administrator privileges:
+
+{% highlight java %}
+class PersistedRoom(
+    private val connection: Connection,
+    private val user: User,
+    private val id: String
+) : Room {
+
+    override fun rename(name: String) {
+        throw RuntimeException("You are not the owner")
+    }
+
+    override fun join() {
+        //Join the room
+    }
+
+    override fun close() {
+        throw RuntimeException("You are not the owner")
+    }
+
+}
+{% endhighlight %}
+
+Then I add a implementation to handle administrator features, I decide to create a decorator because we could have scenarios when the administrator and the common user could have the same implementations then a origin call would be enough. The AdminPersistedRoom will receive a base room and handle all the administrator privileges.
+
+{% highlight java %}
+class AdminPersistedRoom(
+    private val origin: Room,
+    private val connection: Connection,
+    private val id: String
+) : Room {
+
+    override fun rename(name: String) {
+        //Rename the room
+    }
+
+    override fun join() {
+        throw RuntimeException("You are the admin of the room")
+    }
+
+    override fun close() {
+        //Close the room
+    }
+
+}
+{% endhighlight %}
+
+Of course we still need to handle the authorization checking at some point, so I move the checks to the room seach class, then when I find a room I already know if the user that execute the search is an administrator or not and I can instantiate the right class for the job, here is the implementation:
+
+{% highlight java %}
+class PersistedRooms(
+    private val connection: Connection,
+    private val user: User
+) : Rooms {
+    override fun room(id: String): Room {
+        val room = PersistedRoom(
+            connection,
+            user,
+            id
+        )
+        if (user.id() == rows[0].getAs("owner")) {
+            return AdminPersistedRoom(
+                room,
+                connection,
+                id
+            )
+        }
+        return room
+    }
+{% endhighlight %}
+
+I think this is a nice approach that will keep the code being separated in its own class and the only place that you will need to modify when add a new role is the search class, so it got really simple and easy to modify. 
+The more conditionals you add, the complex the code will become, compromising refactorings, new features and possibly introducing hard to track bugs. I'm not sure this is the best approach for the problem but sounds promissing and we are respecting OOP principles, let me know your thouthgs and if you have any ideias.
