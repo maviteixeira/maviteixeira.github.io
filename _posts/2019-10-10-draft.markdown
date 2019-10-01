@@ -12,6 +12,25 @@ preview: Working in my pet projects I came across a common feature in the softwa
 image: https://maviteixeira.com/images/prank_callers.png
 --- 
 
+
+
+
+
+
+When working with real life application eventually we need to add some mechanism to handle roles and permissions inside the system, they can be general as API access blocking endpoints or restricting some feature based the owner of the data.
+
+Recently I came across this issue, more specifically the latter in one of my pet projects, I have some features that just the owner of the data is allowed to execute. I did this many ways before but never using a elegant approach.
+
+
+
+When working in my pet projects I had to restrict access on what a authenticated user could do to a specific part of the application, the feature itself is really simple, I just need to retrieve the user and check if it has the permission to execute the task.
+
+I never thought about in how to implement this kind of
+
+
+
+
+
 Working in my pet projects I came across a common feature in the software industry, roles and permissions. I never though about how to apply this validations in an elegant way so I gave a try. Here is the scenario, let's say we are creating a virtual room and we have 2 major roles: administrators, common.
 
 Administrators can rename and close the room, however they can't join because they are already there. Common users just have permission to join the room and nothing more.
