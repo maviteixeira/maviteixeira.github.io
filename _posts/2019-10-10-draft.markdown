@@ -1,18 +1,19 @@
 ---
 layout: post
 title:  "Elegant roles validation"
-date:   2019-09-03 21:00:00
+date:   2019-10-10 21:00:00
 tags: oop
 comments: true
 shareable: true
 author: maviteixeira
-preview: When working with applications eventually we need to create a mechanism to restrict access to part of the system or even some funcionality. It's pretty common and I did too many times before but I never thougth about doing in a elegant way.
-
+preview: When writing applications eventually you need to create a mechanism to restrict access to part of the system or even some specific functionality. It's a pretty common issue and I did many times before, but I never thought about doing in an elegant way.
 
 image: https://maviteixeira.com/images/prank_callers.png
 --- 
 
-When working with applications eventually we need to create a mechanism to restrict access to part of the system or even some specific funcionality. It's a pretty common issue and I did many times before but I never thougth about doing in a elegant way.
+When writing applications eventually you need to create a mechanism to restrict access to part of the system or even some specific functionality. It's a pretty common issue and I did many times before, but I never thought about doing in an elegant way.
+
+Recently I came across this problem in one of my pet projects, I had to restrict access to specific functionalities based on ownership preventing common users from executing some tasks. Let me give you an example.
 
 <figure class="articleimg">
     <img src="{{page.image}}" alt="Prank callers">
@@ -21,9 +22,9 @@ When working with applications eventually we need to create a mechanism to restr
     </figcaption>
 </figure>
 
-Recently I came across this problem in one of my pet projects, I need to restrict access to specific features based on the owner of the file. Let me give you an example:
+In my scenario I can create virtual rooms and just the owner of the room is allowed to rename or close it and all the common users are allowed to join the room anytime they want.
 
-In my scenario I can create virtual rooms and just the owner of the room is allowed to rename or close it on the other side common users can just join the room anytime.
+The interface below translate the business behavior, given a specific room, you can rename, join or close it and depending on your authorization level you might succeed or not.
 
 {% highlight java %}
 interface Room {
@@ -37,9 +38,7 @@ interface Room {
 }
 {% endhighlight %}
 
-The interface above translate the business behavior, given a specific room, you can rename, join or close it, depending of your authorization level you might succeed or not.
-
-In the code below we receive a authenticated user via DI along with the connection and the room identifier (id), each method that require owner priviliges do a check before executing the task and throws an exception if the role is not compatible with the feature. 
+In the code below I receive an authenticated user via DI along with the database connection and the room identifier (id), each method that requires owner privileges is checked before being executed and throws an exception if the role is not compatible with the requested feature.
 
 {% highlight java %}
 class PersistedRoom(
@@ -73,9 +72,9 @@ class PersistedRoom(
 }
 {% endhighlight %}
 
-However the code that check the role is being repeated across multiple methods, possibly in the future we will need to add more roles increasing the complexity of the class. Let's say new we have a moderator role and its is allowed to rename but not close the room, just one less feature comparing to the owner. This will decrease cohesion of the class because now we need to handle all the room specific features and more roles at the same time.
+I don't like the owner checking before executing the methods, it seems like a bad approach and a possible root of troubles regarding roles validation. Let's say now we need to have a moderator because de owner is too busy taking care of multiple rooms and don't have much time to rename or close empty ones, we will need to add one more verification besides the owner, like an `isModerator` method, this will decrease our class cohesion since besides worrying about room related features it needs to be aware of roles definition as well.
 
-My first step to work on this problem was to change the implementation of `PersistedRoom` this class should focus on the features that a common user will use, in our case it's just the join method, doing that will provide simpler code and a more cohesive class since we removed all the validation about roles.
+Trying to mitigate this problem I change the implementation of `PersistedRoom`, this class should only focus on the features that a common user can access and restrict everything else, in our case just need to implement the join method, doing so will provide simpler code to reason about and a more cohesive class since we removed all the validation about roles.
 
 {% highlight java %}
 class PersistedRoom(
@@ -99,10 +98,10 @@ class PersistedRoom(
 }
 {% endhighlight %}
 
-Great, now we can use the same approach and handle specific owner features in a new implementation of Room called `OwnerPersistedRoom` just like the previous class it will focus on specific features of the room owner like rename and close, since we removed the role checking code eveything became more cohesive as well.
+Now we can use the same approach and focus just on owner features, that's why I created the new class implementation called `OwnedPersistedRoom`, removing the role validation also increase the class cohesion as you can see below:
 
 {% highlight java %}
-class OwnerPersistedRoom(
+class OwnedPersistedRoom(
     private val origin: Room,
     private val connection: Connection,
     private val id: String
@@ -123,9 +122,12 @@ class OwnerPersistedRoom(
 }
 {% endhighlight %}
 
-One thing to notice is that owner implementation is also a decorator so we need to create a instance of PersistedRoom anyway, I did this because I believe in the future features is very likely to have the same implementaiton being a owner or a common users and I don't want duplicated code inseide the classes and also seems more accurate semantically speaking.
+One thing to notice is that `OwnedPersistedRoom` is a decorator so we need to create an instance of `PersistedRoom`, I use this approach for two main reasons: 
 
-Now to make sure we always create the right room for the job we need to modify our seach class adding the role verification on it.
+- First seems more semantically correct because every user can have a common room and this room could be owned by him.
+- Second because I believe in the future features is very likely to have the same implementation being used by both classes and I don't want duplicated code.
+
+The final step is to address the role validation code and make sure that we are creating the right implementation, in my opinion the perfect place to insert that kind of code is the room search class since every room has origin there.
 
 {% highlight java %}
 class PersistedRooms(
@@ -151,6 +153,6 @@ class PersistedRooms(
     }
 {% endhighlight %}
 
-In the code above I implemented the roles validation checking if the user is the owner of the room, but we separated the room specific implementation details from the role verification and that's great. For me it make sense to put the room role check in the search providing a clean implementation to the caller, if we ever need to add a new role we just need to create a new implementation and handle the validation in the search class.
+In the class above I implemented the roles validation and with that information, I can create the right implementation for the caller. I like the separation that both implementations provide us and would be easy to create new types if need it and the search class seems like a good fit for the specific role validation.
 
-This is just an ideia to keep code separated and more cohesive, so the future modifications or extensions could be done easier. Right now it's respecting OOP principles and seems like a really reasonable approach in the long run. Let me know your thouthgs and if you have any ideias or questions.
+Design it's a complex process and we can't nail everything, this is just one possibility that I thought its worth to be shared. We are respecting OOP principles in all classes, they are more cohesive since every class is just worried about its own business and seems easy to modify, extend in the long run. Let me know your thoughts and if you have any ideas or questions please share.
