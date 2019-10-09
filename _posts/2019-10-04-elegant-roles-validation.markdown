@@ -135,14 +135,15 @@ class PersistedRooms(
 ) : Rooms {
     override fun room(id: String): Room {
         //Search for a specific room
+        val databaseRow = //Search
 
         val room = PersistedRoom(
             connection,
             user,
             id
         )
-        if (user.id() == rows[0].getAs("owner")) {
-            return AdminPersistedRoom(
+        if (user.id() == databaseRow.getAs("owner")) {
+            return OwnerPersistedRoom(
                 room,
                 connection,
                 id
