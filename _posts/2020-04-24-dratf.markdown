@@ -1,0 +1,102 @@
+---
+layout: post
+title: "Lack of meaning is really bad"
+date: 2019-10-04 22:00:00
+tags: oop
+comments: true
+shareable: true
+author: maviteixeira
+preview: draft.
+
+image: https://maviteixeira.com/images/caffeinated_concert_tickets.png
+---
+
+In the recently months I'm having some problems to understand the relationship between business and the code on some applications and I think I finally got the real issue behind this, it's because the code have no meaning. Firstly I need to be clear that not understanding what the code is supposed to do most of the time is not a technical issue but a design problem.
+
+But what do I mean with no meaning? I will get there with some examples.
+
+Thinking in a DDD perspective the code and the business have an unbiquotous language and they have a thight bound, so in theory you could learn the business reading the code because they have the same naming patterns and interactions in a high level. All the interfaces and classes have noums and they mean something to the business this approach will require much more effort in understand the product and designing.
+
+For example if you have an user and need to change the email, you might end with interface and classes similar to the example below:
+
+{% highlight java %}
+interface User {
+email(Email newEmail);
+}
+
+    class UserWithEmail implements User {
+        Email email;
+        public UserWithEmail(Email email){
+            this.email = email;
+        }
+
+        public email(Email newEmail){
+            //Change email
+        }
+    }
+
+{% endhighlight %}
+
+{% highlight java %}
+User user = new SomeUser(new RandomEmail());
+user.email(FixedEmail(`newEmail`));
+{% endhighlight %}
+
+The example above shows the usage of the class and as you can see is really simple to understand, is creating some user with a random email and then changing the email to a new one and we can conclude what is going on without the need to check implementation details.
+
+Now I will show a example that we ignore meaning and just work with raw data or in our case using Dtos:
+
+{% highlight java %}
+class UserDto {
+Email email;
+public getEmail(){
+return email;
+}
+
+        public setEmail(Email newEmail){
+            this.email = email;
+        }
+    }
+
+{% endhighlight %}
+
+{% highlight java %}
+
+    String oldEmail = `randomStrings`;
+    UserDto user = new UserDto();
+    user.setEmail(oldEmail);
+
+    String newEmail = `newEmail`;
+    user.setEmail(newEmail);
+
+{% endhighlight %}
+
+The example above is a little more difficult to understand and we need to pause for a bit reading more carefully and compreend what is happening, in the other hand the other example you can read almost like a book.
+
+Being a professional programmer you need to write and read code in daily basis, most of your time is expent reading and understanding what the other developer or even you did in that particular code, making code easier to read will help you to work better, faster, with less mistakes and with better mood, no one likes to read the same code over and over again to understand it.
+
+**"In cognitive psychology, cognitive load refers to the total amount of mental effort being used in the working memory. (Wikipedia)"**
+
+To make cristal clear I will show one more example when we need to get the first day of the month in a specific locale:
+
+{% highlight java %}
+
+    Locale locale = new Locale("ja", "JP", "JP");
+    final Calendar instance = Calendar.getInstance(locale);
+    instance.add(Calendar.DATE, instance.get(Calendar.DAY_OF_MONTH) \* -1);
+    return instance.getTime();
+
+{% endhighlight %}
+
+The code above shows how to get the first day of the month from Japan and it's not that hard to understand, but compare with the code below.
+
+{% highlight java %}
+
+    new BegginingOfMonth(new JapanCalendar())
+
+{% endhighlight %}
+
+Don't get me wrong the Calendar code or any other dependency will exist inside the classes but the difference is how much details we really need to expose and understand.
+
+To conclude, when you have complex business rules and relationships, being able to read code effortlessly is a must for every project and DDD helps to accomplish that task creating a unbiqutous language between different areas. The implementation should be based on that language and undertanding with with more effort in planning, designing that just write code at cruise speed.
+We need to remember that most of our time in software is not just creating new feature but doing mainantance, refactoring and fixing bugs, becarefull with raw data running around in your code base, because that will harm the project.
