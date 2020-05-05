@@ -17,6 +17,8 @@ But what do I mean with no meaning? I will get there with some examples.
 
 Thinking in a DDD perspective the code and the business have an unbiquotous language and they have a thight bound, so in theory you could learn the business reading the code because they have the same naming patterns and interactions in a high level. All the interfaces and classes have noums and they mean something to the business this approach will require much more effort in understand the product and designing.
 
+adasdasdasdasdasdasd
+
 For example if you have an user and need to change the email, you might end with interface and classes similar to the example below:
 
 {% highlight java %}
